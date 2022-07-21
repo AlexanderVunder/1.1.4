@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private Util util = new Util();
     private Connection connection;
     {
         try {
-            connection = util.getConnection("jdbc:mysql://localhost:3306/test","root", "root");
+            connection = Util.getConnection("jdbc:mysql://localhost:3306/test","root", "root");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -22,27 +21,29 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    public void createUsersTable() {
+    public void createUsersTable() throws SQLException {
        try (Statement st = connection.createStatement()) {
            String SQL = "CREATE TABLE Users (id LONG, name varchar(20), lastName varchar(20), age int)";
            st.executeUpdate(SQL);
+           connection.commit();
        } catch (SQLException e) {
+           connection.rollback();
            // игнор исключения согласно условиям ТЗ
        }
-
-
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws SQLException {
         try (Statement st = connection.createStatement()) {
             String SQL = "DROP TABLE Users";
             st.executeUpdate(SQL);
+            connection.commit();
         } catch (SQLException e) {
+            connection.rollback();
             // игнор исключения согласно условиям ТЗ
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
         long id = (long) (Math.random() * 10000);
        try (PreparedStatement ps = connection.prepareStatement("INSERT INTO Users VALUES (?, ?, ?, ?)")) {
            ps.setLong(1, id);
@@ -50,17 +51,21 @@ public class UserDaoJDBCImpl implements UserDao {
            ps.setString(3, lastName);
            ps.setByte(4, age);
            ps.executeUpdate();
+           connection.commit();
            System.out.println("User с именем - " + name + " добавлен в таблицу");
        } catch (SQLException e) {
+           connection.rollback();
            throw new RuntimeException(e);
        }
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws SQLException {
        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM Users WHERE Id = ?")) {
            ps.setLong(1, id);
            ps.executeUpdate();
+           connection.commit();
        } catch (SQLException e) {
+           connection.rollback();
            throw new RuntimeException(e);
        }
     }
@@ -83,10 +88,12 @@ public class UserDaoJDBCImpl implements UserDao {
         return userList;
     }
 
-    public void cleanUsersTable() {
+    public void cleanUsersTable() throws SQLException {
        try (Statement statement = connection.createStatement()) {
            statement.executeUpdate("TRUNCATE TABLE Users");
+           connection.commit();
        } catch (SQLException e) {
+           connection.rollback();
            throw new RuntimeException(e);
        }
     }

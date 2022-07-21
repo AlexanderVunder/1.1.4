@@ -6,8 +6,10 @@ import java.sql.SQLException;
 
 public class Util {
 
-    public Connection getConnection(String url, String user, String password) throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+    public static Connection getConnection(String url, String user, String password) throws SQLException {
+        Connection connection =DriverManager.getConnection(url, user, password);
+        connection.setAutoCommit(false);
+        return connection;
     }
     // реализуйте настройку соеденения с БД
 }
