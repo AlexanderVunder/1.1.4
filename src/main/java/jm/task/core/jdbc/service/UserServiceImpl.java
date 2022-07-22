@@ -9,27 +9,27 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService {
     UserDao userDao = new UserDaoJDBCImpl();
-    public void createUsersTable() throws SQLException {
+    public void createUsersTable() {
         userDao.createUsersTable();
     }
 
-    public void dropUsersTable() throws SQLException {
+    public void dropUsersTable() {
         userDao.dropUsersTable();
     }
 
-    public void saveUser(String name, String lastName, byte age) throws SQLException {
+    public void saveUser(String name, String lastName, byte age) {
         userDao.saveUser(name, lastName, age);
     }
 
-    public void removeUserById(long id) throws SQLException {
+    public void removeUserById(long id) {
         userDao.removeUserById(id);
     }
 
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }
 
-    public void cleanUsersTable() throws SQLException {
+    public void cleanUsersTable() {
         userDao.cleanUsersTable();
     }
 }

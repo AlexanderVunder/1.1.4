@@ -6,8 +6,8 @@ import java.sql.SQLException;
 
 public class Util {
 
-    public static Connection getConnection(String url, String user, String password) throws SQLException {
-        Connection connection =DriverManager.getConnection(url, user, password);
+    public static Connection getConnection() throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
         connection.setAutoCommit(false);
         return connection;
     }

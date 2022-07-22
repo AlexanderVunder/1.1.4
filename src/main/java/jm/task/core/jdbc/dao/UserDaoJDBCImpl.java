@@ -11,7 +11,7 @@ public class UserDaoJDBCImpl implements UserDao {
     private Connection connection;
     {
         try {
-            connection = Util.getConnection("jdbc:mysql://localhost:3306/test","root", "root");
+            connection = Util.getConnection();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -21,51 +21,63 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    public void createUsersTable() throws SQLException {
+    public void createUsersTable() {
        try (Statement st = connection.createStatement()) {
-           String SQL = "CREATE TABLE Users (id LONG, name varchar(20), lastName varchar(20), age int)";
+           String SQL = "CREATE TABLE Users (id SERIAL, name varchar(20), lastName varchar(20), age int)";
            st.executeUpdate(SQL);
            connection.commit();
        } catch (SQLException e) {
-           connection.rollback();
-           // игнор исключения согласно условиям ТЗ
+           try {
+               connection.rollback();
+           } catch (SQLException ex) {
+               throw new RuntimeException(ex);
+           }
        }
     }
 
-    public void dropUsersTable() throws SQLException {
+    public void dropUsersTable() {
         try (Statement st = connection.createStatement()) {
             String SQL = "DROP TABLE Users";
             st.executeUpdate(SQL);
             connection.commit();
         } catch (SQLException e) {
-            connection.rollback();
-            // игнор исключения согласно условиям ТЗ
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) throws SQLException {
-        long id = (long) (Math.random() * 10000);
-       try (PreparedStatement ps = connection.prepareStatement("INSERT INTO Users VALUES (?, ?, ?, ?)")) {
-           ps.setLong(1, id);
-           ps.setString(2, name);
-           ps.setString(3, lastName);
-           ps.setByte(4, age);
+    public void saveUser(String name, String lastName, byte age) {
+       try (PreparedStatement ps = connection.prepareStatement("INSERT INTO Users(name, lastName, age) VALUES (?, ?, ?)")) {
+           ps.setString(1, name);
+           ps.setString(2, lastName);
+           ps.setByte(3, age);
            ps.executeUpdate();
            connection.commit();
            System.out.println("User с именем - " + name + " добавлен в таблицу");
        } catch (SQLException e) {
-           connection.rollback();
+           try {
+               connection.rollback();
+           } catch (SQLException ex) {
+               throw new RuntimeException(ex);
+           }
            throw new RuntimeException(e);
        }
     }
 
-    public void removeUserById(long id) throws SQLException {
+    public void removeUserById(long id) {
        try (PreparedStatement ps = connection.prepareStatement("DELETE FROM Users WHERE Id = ?")) {
            ps.setLong(1, id);
            ps.executeUpdate();
            connection.commit();
        } catch (SQLException e) {
-           connection.rollback();
+           try {
+               connection.rollback();
+           } catch (SQLException ex) {
+               throw new RuntimeException(ex);
+           }
            throw new RuntimeException(e);
        }
     }
@@ -88,12 +100,16 @@ public class UserDaoJDBCImpl implements UserDao {
         return userList;
     }
 
-    public void cleanUsersTable() throws SQLException {
+    public void cleanUsersTable() {
        try (Statement statement = connection.createStatement()) {
            statement.executeUpdate("TRUNCATE TABLE Users");
            connection.commit();
        } catch (SQLException e) {
-           connection.rollback();
+           try {
+               connection.rollback();
+           } catch (SQLException ex) {
+               throw new RuntimeException(ex);
+           }
            throw new RuntimeException(e);
        }
     }
