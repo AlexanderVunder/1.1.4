@@ -7,7 +7,6 @@ public class Util {
 
     public static Connection getConnection() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
-        connection.setAutoCommit(false);
         return connection;
     }
     // реализуйте настройку соеденения с БД
