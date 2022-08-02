@@ -11,7 +11,6 @@ public class Main {
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
 
-        try {
             userService.createUsersTable();
             userService.saveUser("Alex", "Vunder", (byte) 28);
             userService.saveUser("Petr", "Ivanov", (byte) 35);
@@ -19,8 +18,7 @@ public class Main {
             userService.saveUser("User", "QWEr", (byte) 45);
             System.out.println(userService.getAllUsers());
             userService.cleanUsersTable();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            userService.dropUsersTable();
         }
-    }
 }
+

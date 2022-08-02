@@ -24,11 +24,13 @@ public class UserDaoHibernateImpl implements UserDao {
     public void createUsersTable() {
         try (Session session = sessionFactory.openSession()) {
         transaction = session.beginTransaction();
-            String sqlCreate = "CREATE TABLE Users (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name varchar(20), lastName varchar(20), age int)";
+            String sqlCreate = "CREATE TABLE IF NOT EXISTS Users (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name varchar(20), lastName varchar(20), age int)";
             Query query = session.createSQLQuery(sqlCreate).addEntity(User.class);
         query.executeUpdate();
+            System.out.println("Таблица успешно создана");
         transaction.commit();
         } catch (Exception e) {
+            transaction.rollback();
         }
     }
 
@@ -36,11 +38,13 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            String sqlDrop = "DROP TABLE Users";
+            String sqlDrop = "DROP TABLE IF EXISTS Users";
             Query query = session.createSQLQuery(sqlDrop).addEntity(User.class);
             query.executeUpdate();
+            System.out.println("Таблица успешно удалена");
             transaction.commit();
         } catch (Exception e) {
+            transaction.rollback();
         }
 
     }
@@ -66,6 +70,7 @@ public class UserDaoHibernateImpl implements UserDao {
             User user = session.get(User.class, id);
             session.delete(user);
             session.getTransaction().commit();
+            System.out.println("Пользователь " + user.getName() + " удален по id");
         } catch (Exception e) {
             e.printStackTrace();
             transaction.rollback();
@@ -90,6 +95,7 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction = session.beginTransaction();
             session.createQuery("delete User").executeUpdate();
             session.getTransaction().commit();
+            System.out.println("Все пользователи успешно удалены из таблицы");
         } catch (Exception e) {
             e.printStackTrace();
             transaction.rollback();
