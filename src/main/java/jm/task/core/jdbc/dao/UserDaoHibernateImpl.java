@@ -5,9 +5,7 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -25,8 +23,8 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
         transaction = session.beginTransaction();
             String sqlCreate = "CREATE TABLE IF NOT EXISTS Users (id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, name varchar(20), lastName varchar(20), age int)";
-            Query query = session.createSQLQuery(sqlCreate).addEntity(User.class);
-        query.executeUpdate();
+            Query query = session.createSQLQuery(sqlCreate);
+            query.executeUpdate();
             System.out.println("Таблица успешно создана");
         transaction.commit();
         } catch (Exception e) {
@@ -39,7 +37,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             String sqlDrop = "DROP TABLE IF EXISTS Users";
-            Query query = session.createSQLQuery(sqlDrop).addEntity(User.class);
+            Query query = session.createSQLQuery(sqlDrop);
             query.executeUpdate();
             System.out.println("Таблица успешно удалена");
             transaction.commit();
@@ -55,7 +53,7 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction = session.beginTransaction();
             User user = new User(name,lastName,age);
             session.save(user);
-            session.getTransaction().commit();
+            transaction.commit();
             System.out.println("User с именем - " + name + " добавлен в таблицу");
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,7 +67,7 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction = session.beginTransaction();
             User user = session.get(User.class, id);
             session.delete(user);
-            session.getTransaction().commit();
+            transaction.commit();
             System.out.println("Пользователь " + user.getName() + " удален по id");
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,7 +92,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.createQuery("delete User").executeUpdate();
-            session.getTransaction().commit();
+            transaction.commit();
             System.out.println("Все пользователи успешно удалены из таблицы");
         } catch (Exception e) {
             e.printStackTrace();
